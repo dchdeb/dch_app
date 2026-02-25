@@ -1,0 +1,470 @@
+/* ---------- THEME TOKENS ---------- */
+:root {
+    /* Light */
+    --bg: #f5f7fb;
+    --text: #0f172a;
+    --muted: #64748b;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --input: #ffffff;
+    --ring: rgba(99, 102, 241, .25);
+    --primary: #6366f1;
+    --primary-2: #4f46e5;
+    color-scheme: light dark;
+}
+
+[data-theme="dark"] {
+    --bg: #0b1220;
+    --text: #e6eaf2;
+    --muted: #9aa4b2;
+    --card: #0f172a;
+    --border: #1e293b;
+    --input: #0b1220;
+    --ring: rgba(99, 102, 241, .35);
+    --primary: #6366f1;
+    --primary-2: #4f46e5;
+}
+
+/* ---------- BASE ---------- */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+/* body {
+    margin: 0;
+    background: var(--bg);
+    background-image: url("/images/login-bg-img.png");
+    color: var(--text);
+    font: 400 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    display: grid;
+    place-items: center;
+} */
+
+
+body{
+    margin: 0;
+    color: var(--text);
+    font: 400 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* background layer */
+body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("/images/login-bg.jpg") no-repeat center center;
+    background-size: cover;
+
+    /* 🔥 blur */
+    filter: blur(2px);
+
+    /* zoom to avoid blur edge */
+    transform: scale(1.08);
+
+    z-index: -1;
+}
+
+
+
+
+
+
+/* ---------- LAYOUT ---------- */
+.login-container {
+    width: 100%;
+    max-width: 460px;
+    padding: 24px;
+}
+
+.login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    padding: 28px 24px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.logo img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* ---------- FORM ---------- */
+.login-form {
+    margin-top: 6px;
+}
+
+.input-group {
+    position: relative;
+    margin: 16px 0;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 42px 14px 12px;
+    border-radius: 12px;
+    background: var(--input);
+    color: var(--text);
+    border: 1px solid var(--border);
+    transition: border-color .2s, box-shadow .2s, background .2s, color .2s;
+}
+
+.input-group input::placeholder {
+    color: transparent;
+}
+
+.input-group label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    pointer-events: none;
+    color: var(--muted);
+    background: transparent;
+    transition: .15s ease;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 .2rem var(--ring);
+    outline: 0;
+    background: var(--input);
+    color: var(--text);
+}
+
+.input-group input:not(:placeholder-shown)+label,
+.input-group input:focus+label {
+    top: -8px;
+    transform: none;
+    font-size: 12px;
+    background: var(--card);
+}
+
+.input-border {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1px;
+    background: var(--border);
+}
+
+.error-message {
+    display: block;
+    margin-top: 6px;
+    color: #ef4444;
+    font-size: 12px;
+    min-height: 1em;
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 35%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    color: var(--text);
+    border-color: var(--primary);
+}
+
+/* Options row */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 16px;
+}
+
+.forgot-link {
+    color: var(--primary-2);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Checkbox */
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input {
+    display: none;
+}
+
+.checkmark {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--input);
+    color: var(--text);
+}
+
+.checkbox-container input:checked+.checkmark {
+    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    color: #fff;
+    border: none;
+}
+
+/* Submit button */
+.submit-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    cursor: pointer;
+}
+
+.btn-text {
+    pointer-events: none;
+}
+
+.btn-loader {
+    display: none;
+}
+
+.submit-btn[aria-busy="true"] .btn-text {
+    opacity: .5;
+}
+
+.submit-btn[aria-busy="true"] .btn-loader {
+    display: block;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: var(--muted);
+    margin: 18px 0 8px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--border);
+}
+
+/* Socials */
+.social-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: transparent;
+    text-decoration: none;
+}
+
+.social-btn:hover {
+    border-color: var(--primary);
+}
+
+/* Footer link */
+.signup-link {
+    text-align: center;
+    margin-top: 14px;
+    color: var(--muted);
+}
+
+.signup-link a {
+    color: var(--primary-2);
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* Success overlay */
+.success-message[hidden] {
+    display: none;
+}
+
+.success-message {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.success-icon {
+    margin: 8px auto;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    border-color: var(--primary);
+}
+
+/* Brand logo theme tokens */
+:root {
+    --logo-primary: #3b82f6;
+    /* blue */
+    --logo-secondary: #6366f1;
+    /* indigo */
+    --logo-text: #0f172a;
+    /* light theme text */
+    --logo-glow: rgba(99, 102, 241, .18);
+}
+
+[data-theme="dark"] {
+    --logo-text: #e6eaf2;
+    /* dark theme text */
+    --logo-glow: rgba(99, 102, 241, .35);
+}
+
+/* sizing */
+.brand-logo {
+    display: flex;
+    justify-content: center;
+}
+
+.logo-svg {
+    height: 56px;
+    width: auto;
+}
+
+.logo-theme .logo-dark {
+    display: none;
+}
+
+[data-theme="dark"] .logo-theme .logo-light {
+    display: none;
+}
+
+[data-theme="dark"] .logo-theme .logo-dark {
+    display: block;
+}
+
+.logo-theme img {
+    height: 56px;
+    width: auto;
+}
+
+/* keep logo centered in BOTH light & dark */
+.login-header {
+    display: grid;
+    place-items: center;
+}
+
+/* header center */
+.logo {
+    display: grid;
+    place-items: center;
+    width: 100%;
+}
+
+/* wrapper center */
+
+.logo img,
+.logo-svg {
+    /* svg থাকলে একই রুল প্রযোজ্য */
+    display: block;
+    margin-inline: auto;
+    /* LTR/RTL safe centering */
+    height: 56px;
+    /* আপনার পছন্দমতো */
+    width: auto;
+}
+
+/* আগের কোন টেক্সট-অ্যালাইন রুল থাকলে সমস্যা না হয় */
+.login-header,
+.logo {
+    text-align: initial;
+}
+
+.logo-theme .logo-dark {
+    display: none;
+}
+
+[data-theme="dark"] .logo-theme .logo-light {
+    display: none;
+}
+
+[data-theme="dark"] .logo-theme .logo-dark {
+    display: block;
+}
+
+.logo-theme img {
+    height: 56px;
+    width: auto;
+    display: block;
+    margin-inline: auto;
+}
+
+.login-header {
+    display: grid;
+    place-items: center;
+}
