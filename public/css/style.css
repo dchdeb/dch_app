@@ -1,12 +1,12 @@
 /* ===== Theme tokens ===== */
 :root {
     /* (dark defaults) */
-    --bg: #0a0f1f;
+    /* --bg: #0a0f1f; */
     --surface: #0c1223;
     --sidebar: #0c1326;
     --card: #0f182e;
-    --border: #19253f;
-    --text: #e7edf7;
+    /* --border: #19253f; */
+    --text: #0f172a;
     --muted: #9aa9c3;
     --p1: #5b66f2;
     --p2: #3f4ae7;
@@ -167,15 +167,23 @@ main{
 
 /* topbar */
 .topbar {
-    display: flex;
+      display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.6rem 0.9rem;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1rem;
+
+    /* light background */
+    background: linear-gradient(180deg, #ffffff 0%, #c9d2db 100%);
+
+    /* remove hard border */
+    border-bottom: none;
+
+    /* soft bottom shadow */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
     position: sticky;
-    top: 100;
-    z-index: 9;
+    top: 0;
+    z-index: 99;
 }
 
 .search {
@@ -496,9 +504,9 @@ html[data-theme="light"] .sidebar .nav-link.active {
 /* Profile dropdown – theme-aware */
 .dropdown-menu.usermenu {
     min-width: 240px;
-    background: var(--card);
-    color: var(--text);
-    border: 1px solid var(--border);
+    background: white;
+    color: rgb(51, 49, 49);
+    border: 1px solid 0 18px 40px rgba(0, 0, 0, 0.2);
     border-radius: 14px;
     box-shadow: var(--shadow);
     padding: 0.35rem 0;
@@ -508,7 +516,7 @@ html[data-theme="light"] .sidebar .nav-link.active {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text);
+    color: rgb(51, 49, 49);
 }
 
 .usermenu .dropdown-item .bi {
@@ -932,8 +940,8 @@ button#startTourBtn {
 
 /*  BRADCRUMB DESIGN */
 .page-navbar{
-    background: #fff;
-    border-bottom: 1px solid #e5e7eb;
+    background: #c9d2db ;
+    border-bottom: 1px solid #c9d2db ;
     min-height: 30px;
 }
 
@@ -959,7 +967,7 @@ button#startTourBtn {
 }
 
 
-/* Create user Filter option design */
+/* Create user Filter option design start */
 .filter-card{
     border-radius:14px;
     border:1px solid #e5e7eb;
@@ -996,3 +1004,118 @@ button#startTourBtn {
     color:#fff;
     box-shadow:0 4px 12px rgba(25,135,84,0.2);
 }
+  /* Create user Filter option design  End*/
+
+
+/* Create user 2nd part design start */
+
+
+
+/* body{
+font-family: Arial, Helvetica, sans-serif;
+background:#f4f6f9;
+}
+
+.container{
+width:95%;
+margin:30px auto;
+} */
+
+.card{
+background:#fff;
+padding:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+margin-bottom:20px;
+}
+
+/* top area */
+.top-bar{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+}
+
+.filter{
+width:50%;
+}
+
+.filter input[type=text]{
+width:100%;
+padding:8px;
+border:1px solid #ccc;
+border-radius:5px;
+margin-bottom:10px;
+}
+
+.btn{
+padding:8px 14px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.btn-primary{background:#4e73df;color:#fff;}
+.btn-success{background:#1cc88a;color:#fff;}
+
+/* table */
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+thead{
+background:#4e73df;
+color:white;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+text-align:center;
+}
+
+tbody tr:nth-child(even){
+background:#f8f9fc;
+}
+
+/* badge */
+.badge{
+padding:4px 8px;
+border-radius:12px;
+color:white;
+font-size:12px;
+}
+.active{background:#1cc88a;}
+.inactive{background:#e74a3b;}
+.super{background:#4e73df;}
+.normal{background:#858796;}
+
+/* modal */
+.modal{
+display:none;
+position:fixed;
+left:0;top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.5);
+}
+
+.modal-box{
+background:white;
+width:400px;
+margin:8% auto;
+padding:20px;
+border-radius:8px;
+}
+
+.modal-box input{
+width:100%;
+padding:8px;
+margin-bottom:10px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+
+/* Create user 2nd part design end */

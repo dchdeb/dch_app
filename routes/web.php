@@ -27,13 +27,30 @@ Route::get('/admin', function () {
 
 
 
+// Route::middleware('auth')->group(function () {
+//     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+//     Route::get('/settings/security_settings', [SecurityController::class, 'index'])->name('settings.security_settings.index');
+//     Route::get('/settings/security_settings/users', [SecurityController::class, 'index'])->name('settings.security_settings.users.index');
+//      Route::resource('/settings/security_settings/users', SecurityController::class);
+//     Route::resource('settings/security_settings/users', SecurityController::class)->names('settings.security_settings.users');
+    
+// });
+
+
 Route::middleware('auth')->group(function () {
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::get('/settings/security_settings', [SecurityController::class, 'index'])->name('settings.security_settings.index');
-    Route::get('/settings/security_settings/create_user', [CreateUserController::class, 'index'])->name('settings.security_settings.create_user.index');
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/settings', [SettingsController::class, 'index'])
+        ->name('settings.index');
+
+    Route::get('/settings/security_settings', [SecurityController::class, 'index'])
+        ->name('settings.security_settings.index');
+
+    Route::prefix('settings/security_settings')
+        ->name('settings.security_settings.')
+        ->group(function () {
+
+            Route::resource('users', CreateUserController::class);
+        });
 });
 
 
