@@ -50,7 +50,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Role Name</th>
-                                    <th>Description</th>
+                                    <th>Guard</th>
                                     <th class="text-center">Permissions</th>
                                     <th>Created</th>
                                     <th class="text-center">Actions</th>
@@ -68,7 +68,7 @@
                                                 <span class="badge bg-danger ms-1">System</span>
                                             @endif
                                         </td>
-                                        <td>{{ $role->description ?? '-' }}</td>
+                                        <td>{{ $role->guard_name }}</td>
                                         <td class="text-center">
                                             <span class="badge bg-info">{{ $role->permissions_count }} permissions</span>
                                         </td>
@@ -150,7 +150,7 @@
                                     <tr>
                                         <td colspan="6" class="text-center py-4">
                                             <i class="bi bi-shield fs-1 text-muted d-block mb-2"></i>
-                                            No roles found
+                                            No roles found. Please run the seeder first.
                                         </td>
                                     </tr>
                                 @endforelse
@@ -173,22 +173,30 @@
                     <h6 class="mb-0"><i class="bi bi-list-check me-1"></i>All Permissions by Module</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        @foreach($groupedPermissions as $module => $perms)
-                            <div class="col-md-3 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-header py-2 bg-light">
-                                        <strong class="small">{{ ucfirst(str_replace('-', ' ', $module)) }}</strong>
-                                    </div>
-                                    <div class="card-body py-2">
-                                        @foreach($perms as $perm)
-                                            <span class="badge bg-secondary mb-1">{{ $perm->name }}</span>
-                                        @endforeach
+                    @if($groupedPermissions->count() > 0)
+                        <div class="row">
+                            @foreach($groupedPermissions as $module => $perms)
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-header py-2 bg-light">
+                                            <strong class="small">{{ ucfirst(str_replace('-', ' ', $module)) }}</strong>
+                                        </div>
+                                        <div class="card-body py-2">
+                                            @foreach($perms as $perm)
+                                                <span class="badge bg-secondary mb-1">{{ $perm->name }}</span>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            No permissions found. Please run the seeder to create permissions:
+                            <code>php artisan db:seed --class=RolePermissionSeeder</code>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

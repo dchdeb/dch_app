@@ -47,17 +47,6 @@
                             <small class="text-muted">Format: module.action</small>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Display Name</label>
-                            <input type="text" name="display_name" class="form-control" 
-                                   value="{{ old('display_name', $permission->display_name) }}">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea name="description" class="form-control" rows="2">{{ old('description', $permission->description) }}</textarea>
-                        </div>
-
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('settings.security.permissions.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left me-1"></i> Cancel

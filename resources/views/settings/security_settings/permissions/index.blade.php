@@ -25,6 +25,14 @@
         </div>
     </div>
 
+    @if($groupedPermissions->count() == 0)
+        <div class="alert alert-warning">
+            <h5><i class="bi bi-exclamation-triangle me-2"></i>No Permissions Found</h5>
+            <p>Please run the seeder to create default permissions:</p>
+            <code>php artisan db:seed --class=RolePermissionSeeder</code>
+        </div>
+    @endif
+
     {{-- Permissions by Module --}}
     <div class="row">
         @foreach($groupedPermissions as $module => $perms)
@@ -50,9 +58,6 @@
                                         <tr>
                                             <td>
                                                 <small>{{ $perm->name }}</small>
-                                                @if($perm->display_name)
-                                                    <br><small class="text-muted">{{ $perm->display_name }}</small>
-                                                @endif
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group btn-group-sm">

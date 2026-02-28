@@ -46,19 +46,12 @@
                     <form action="{{ route('settings.security.roles.store') }}" method="POST">
                         @csrf
                         
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Role Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" class="form-control" 
-                                       value="{{ old('name') }}" required
-                                       placeholder="e.g., department-head">
-                                <small class="text-muted">Use lowercase letters and hyphens (e.g., my-role)</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Description</label>
-                                <input type="text" name="description" class="form-control" 
-                                       value="{{ old('description') }}" placeholder="Brief description of the role">
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" 
+                                   value="{{ old('name') }}" required
+                                   placeholder="e.g., department-head">
+                            <small class="text-muted">Use lowercase letters and hyphens (e.g., my-role)</small>
                         </div>
 
                         <div class="mb-3">
@@ -74,49 +67,57 @@
                                 </div>
                             </div>
 
-                            <div class="accordion" id="permissionsAccordion">
-                                @php
-                                    $loopIndex = 0;
-                                @endphp
-                                @foreach($groupedPermissions as $module => $perms)
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" 
-                                                    data-bs-toggle="collapse" 
-                                                    data-bs-target="#collapse{{ $loopIndex }}">
-                                                <strong>{{ ucfirst(str_replace('-', ' ', $module)) }}</strong>
-                                                <span class="badge bg-secondary ms-2">{{ $perms->count() }} permissions</span>
-                                            </button>
-                                        </h2>
-                                        <div id="collapse{{ $loopIndex }}" class="accordion-collapse collapse" 
-                                             data-bs-parent="#permissionsAccordion">
-                                            <div class="accordion-body">
-                                                <div class="row">
-                                                    @foreach($perms as $perm)
-                                                        <div class="col-md-4 mb-2">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input perm-check" 
-                                                                       type="checkbox" 
-                                                                       name="permissions[]" 
-                                                                       value="{{ $perm->name }}" 
-                                                                       id="perm_{{ $perm->id }}"
-                                                                       data-module="{{ $module }}"
-                                                                       {{ in_array($perm->name, old('permissions', [])) ? 'checked' : '' }}>
-                                                                <label class="form-check-label small" for="perm_{{ $perm->id }}">
-                                                                    {{ $perm->name }}
-                                                                </label>
+                            @if($groupedPermissions->count() > 0)
+                                <div class="accordion" id="permissionsAccordion">
+                                    @php
+                                        $loopIndex = 0;
+                                    @endphp
+                                    @foreach($groupedPermissions as $module => $perms)
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" 
+                                                        data-bs-toggle="collapse" 
+                                                        data-bs-target="#collapse{{ $loopIndex }}">
+                                                    <strong>{{ ucfirst(str_replace('-', ' ', $module)) }}</strong>
+                                                    <span class="badge bg-secondary ms-2">{{ $perms->count() }} permissions</span>
+                                                </button>
+                                            </h2>
+                                            <div id="collapse{{ $loopIndex }}" class="accordion-collapse collapse" 
+                                                 data-bs-parent="#permissionsAccordion">
+                                                <div class="accordion-body">
+                                                    <div class="row">
+                                                        @foreach($perms as $perm)
+                                                            <div class="col-md-4 mb-2">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input perm-check" 
+                                                                           type="checkbox" 
+                                                                           name="permissions[]" 
+                                                                           value="{{ $perm->name }}" 
+                                                                           id="perm_{{ $perm->id }}"
+                                                                           data-module="{{ $module }}"
+                                                                           {{ in_array($perm->name, old('permissions', [])) ? 'checked' : '' }}>
+                                                                    <label class="form-check-label small" for="perm_{{ $perm->id }}">
+                                                                        {{ $perm->name }}
+                                                                    </label>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    @php
-                                        $loopIndex++;
-                                    @endphp
-                                @endforeach
-                            </div>
+                                        @php
+                                            $loopIndex++;
+                                        @endphp
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    No permissions found. Please run the seeder first:
+                                    <code>php artisan db:seed --class=RolePermissionSeeder</code>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">

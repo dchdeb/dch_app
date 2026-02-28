@@ -45,6 +45,8 @@
 
 
 
+
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -61,7 +63,6 @@ class SecurityController extends Controller
     {
         return view('settings.security_settings.index');
     }
-    
 
     // ============================================
     // USER MANAGEMENT
@@ -131,7 +132,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.users.index')
+            return redirect()->route('settings.security_settings.users.index')
                 ->with('success', 'User created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -177,7 +178,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.users.index')
+            return redirect()->route('settings.security_settings.users.index')
                 ->with('success', 'User updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -188,20 +189,20 @@ class SecurityController extends Controller
     /**
      * Delete user
      */
-    public function deleteUser($id)
-    {
-        $user = User::findOrFail($id);
+    // public function deleteUser($id)
+    // {
+    //     $user = User::findOrFail($id);
 
-        // Prevent deleting self
-        if ($user->id === auth()->id()) {
-            return back()->with('error', 'You cannot delete your own account!');
-        }
+        
+    //     if ($user->id === auth()->id()) {
+    //         return back()->with('error', 'You cannot delete your own account!');
+    //     }
 
-        $user->delete();
+    //     $user->delete();
 
-        return redirect()->route('settings.security.users.index')
-            ->with('success', 'User deleted successfully!');
-    }
+    //     return redirect()->route('settings.security_settings.users.index')
+    //         ->with('success', 'User deleted successfully!');
+    // }
 
     /**
      * Reset user password
@@ -264,7 +265,6 @@ class SecurityController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
-            'description' => 'nullable|string|max:500',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,name',
         ]);
@@ -274,7 +274,6 @@ class SecurityController extends Controller
             $role = Role::create([
                 'name' => $request->name,
                 'guard_name' => 'web',
-                'description' => $request->description,
             ]);
 
             // Assign permissions
@@ -284,7 +283,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -319,7 +318,6 @@ class SecurityController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $id,
-            'description' => 'nullable|string|max:500',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,name',
         ]);
@@ -328,7 +326,6 @@ class SecurityController extends Controller
         try {
             $role->update([
                 'name' => $request->name,
-                'description' => $request->description,
             ]);
 
             // Sync permissions
@@ -337,7 +334,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -369,7 +366,7 @@ class SecurityController extends Controller
 
         $role->delete();
 
-        return redirect()->route('settings.security.roles.index')
+        return redirect()->route('settings.security_settings.roles.index')
             ->with('success', 'Role deleted successfully!');
     }
 
@@ -429,18 +426,14 @@ class SecurityController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name',
-            'display_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:500',
         ]);
 
         Permission::create([
             'name' => $request->name,
             'guard_name' => 'web',
-            'display_name' => $request->display_name,
-            'description' => $request->description,
         ]);
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission created successfully!');
     }
 
@@ -462,17 +455,13 @@ class SecurityController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name,' . $id,
-            'display_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:500',
         ]);
 
         $permission->update([
             'name' => $request->name,
-            'display_name' => $request->display_name,
-            'description' => $request->description,
         ]);
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission updated successfully!');
     }
 
@@ -484,7 +473,7 @@ class SecurityController extends Controller
         $permission = Permission::findOrFail($id);
         $permission->delete();
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission deleted successfully!');
     }
 
@@ -575,14 +564,13 @@ class SecurityController extends Controller
             $newRole = Role::create([
                 'name' => $originalRole->name . '-copy',
                 'guard_name' => 'web',
-                'description' => 'Cloned from ' . $originalRole->name,
             ]);
 
             $newRole->givePermissionTo($originalRole->permissions->pluck('name')->toArray());
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role cloned successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
