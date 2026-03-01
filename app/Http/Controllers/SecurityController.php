@@ -189,20 +189,20 @@ class SecurityController extends Controller
     /**
      * Delete user
      */
-    // public function deleteUser($id)
-    // {
-    //     $user = User::findOrFail($id);
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
 
         
-    //     if ($user->id === auth()->id()) {
-    //         return back()->with('error', 'You cannot delete your own account!');
-    //     }
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete your own account!');
+        }
 
-    //     $user->delete();
+        $user->delete();
 
-    //     return redirect()->route('settings.security_settings.users.index')
-    //         ->with('success', 'User deleted successfully!');
-    // }
+        return redirect()->route('settings.security_settings.users.index')
+            ->with('success', 'User deleted successfully!');
+    }
 
     /**
      * Reset user password
