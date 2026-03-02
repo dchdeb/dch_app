@@ -66,10 +66,10 @@
 
     <div class="row">
         {{-- User Management Card --}}
-        <div class="col-md-3 mb-3">
+        <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.users.index') }}" class="text-decoration-none">
-                <div class="card setting-card h-100 hover-card">
-                    <div class="card-body text-center py-4">
+                <div class="card setting-card h-60 hover-card">
+                    <div class="card-body text-center py-2">
                         <div class="icon-circle bg-primary text-white mb-3 mx-auto">
                             <i class="bi bi-people fs-4"></i>
                         </div>
@@ -84,10 +84,10 @@
         </div>
 
         {{-- Role Management Card --}}
-        <div class="col-md-3 mb-3">
+        <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.roles.index') }}" class="text-decoration-none">
-                <div class="card setting-card h-100 hover-card">
-                    <div class="card-body text-center py-4">
+                <div class="card setting-card h-60 hover-card">
+                    <div class="card-body text-center py-2">
                         <div class="icon-circle bg-success text-white mb-3 mx-auto">
                             <i class="bi bi-shield-check fs-4"></i>
                         </div>
@@ -102,10 +102,10 @@
         </div>
 
         {{-- Permission Management Card --}}
-        <div class="col-md-3 mb-3">
+        <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.permissions.index') }}" class="text-decoration-none">
-                <div class="card setting-card h-100 hover-card">
-                    <div class="card-body text-center py-4">
+                <div class="card setting-card h-60 hover-card">
+                    <div class="card-body text-center py-2">
                         <div class="icon-circle bg-warning text-white mb-3 mx-auto">
                             <i class="bi bi-key fs-4"></i>
                         </div>
@@ -120,10 +120,10 @@
         </div>
 
         {{-- Create User (Old Link) Card --}}
-        <div class="col-md-3 mb-3">
-            <a href="{{ route('settings.security_settings.create_user.index') }}" class="text-decoration-none">
-                <div class="card setting-card h-100 hover-card">
-                    <div class="card-body text-center py-4">
+        <div class="col-md-3 mb-1">
+            <a href="{{ route('settings.security_settings.users.index') }}" class="text-decoration-none">
+                <div class="card setting-card h-60 hover-card">
+                    <div class="card-body text-center py-2">
                         <div class="icon-circle bg-info text-white mb-3 mx-auto">
                             <i class="bi bi-person-plus fs-4"></i>
                         </div>
@@ -225,8 +225,8 @@
 
 <style>
 .icon-circle {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -241,7 +241,7 @@
 .hover-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    border-color: #0d6efd;
+    border-color: #0fe0a1;
 }
 
 .hover-card:hover .card-title {

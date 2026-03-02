@@ -5,7 +5,7 @@
     <span>›</span>
     <a href="{{ route('settings.index') }}">Settings</a>
     <span>›</span>
-    <a href="{{ route('settings.security_settings.index') }}">Security</a>
+    <a href="{{ route('settings.security_settings.index') }}">Security Settings</a>
     <span>›</span>
     <span>Permissions</span>
 @endsection
@@ -18,7 +18,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="bi bi-key me-2"></i>Permission Management</h4>
-                <a href="{{ route('settings.security.permissions.create') }}" class="btn btn-primary">
+                <a href="{{ route('settings.security_settings.permissions.create') }}" class="btn btn-primary">
                     <i class="bi bi-plus-circle me-1"></i> Add New Permission
                 </a>
             </div>
@@ -61,11 +61,11 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('settings.security.permissions.edit', $perm->id) }}" 
+                                                    <a href="{{ route('settings.security_settings.permissions.edit', $perm->id) }}" 
                                                        class="btn btn-outline-primary btn-sm" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <form action="{{ route('settings.security.permissions.destroy', $perm->id) }}" 
+                                                    <form action="{{ route('settings.security_settings.permissions.destroy', $perm->id) }}" 
                                                           method="POST" 
                                                           class="d-inline"
                                                           onsubmit="return confirm('Delete this permission?');">

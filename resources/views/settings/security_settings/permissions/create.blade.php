@@ -7,7 +7,7 @@
     <span>›</span>
     <a href="{{ route('settings.security_settings.index') }}">Security</a>
     <span>›</span>
-    <a href="{{ route('settings.security.permissions.index') }}">Permissions</a>
+    <a href="{{ route('settings.security_settings.permissions.index') }}">Permissions</a>
     <span>›</span>
     <span>Create</span>
 @endsection
@@ -36,7 +36,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('settings.security.permissions.store') }}" method="POST">
+                    <form action="{{ route('settings.security_settings.permissions.store') }}" method="POST">
                         @csrf
                         
                         <div class="mb-3">
@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('settings.security.permissions.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('settings.security_settings.permissions.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">

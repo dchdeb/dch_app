@@ -5,7 +5,7 @@
     <span>›</span>
     <a href="{{ route('settings.index') }}">Settings</a>
     <span>›</span>
-    <a href="{{ route('settings.security_settings.index') }}">Security</a>
+    <a href="{{ route('settings.security_settings.index') }}">Security Settings</a>
     <span>›</span>
     <span>Users</span>
 @endsection

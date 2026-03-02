@@ -1,4 +1,9 @@
 @extends('layouts.layout')
+
+@section('breadcrumb')
+    <a href="{{ route('dashboard') }}">Home</a>
+@endsection
+
 @section('title', 'Dashboard')
 @section('content')
 

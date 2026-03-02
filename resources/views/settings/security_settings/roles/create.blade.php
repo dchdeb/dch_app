@@ -7,7 +7,7 @@
     <span>›</span>
     <a href="{{ route('settings.security_settings.index') }}">Security</a>
     <span>›</span>
-    <a href="{{ route('settings.security.roles.index') }}">Roles</a>
+    <a href="{{ route('settings.security_settings.roles.index') }}">Roles</a>
     <span>›</span>
     <span>Create</span>
 @endsection
@@ -43,7 +43,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('settings.security.roles.store') }}" method="POST">
+                    <form action="{{ route('settings.security_settings.roles.store') }}" method="POST">
                         @csrf
                         
                         <div class="mb-3">
@@ -121,7 +121,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('settings.security.roles.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('settings.security_settings.roles.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">

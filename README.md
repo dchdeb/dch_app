@@ -39,6 +39,21 @@ use App\Models\User;
 
 User::create([
     'name' => 'Admin',
-    'email' => 'susmita.dch@gmail.com';
-    'password' => bcrypt('susmita@123');
+    'email' => 'susmita.dch@gmail.com',
+    'password' => bcrypt('susmita@123')
 ])->assignRole('super-admin');
+
+
+
+
+use App\Models\User;
+
+User::create([
+    'name' => 'Admin',
+    'email' => 'susmita.dch@gmail.com',
+    'password' => bcrypt('susmita@123')
+])->assignRole('super-admin');
+
+
+
+GLM theke sudhu role index file er css class soho blade file copy kore boshiyechi.
