@@ -69,7 +69,7 @@
         <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.users.index') }}" class="text-decoration-none">
                 <div class="card setting-card h-60 hover-card">
-                    <div class="card-body text-center py-2">
+                    <div class="card-body text-center py-2 px-1">
                         <div class="icon-circle bg-primary text-white mb-3 mx-auto">
                             <i class="bi bi-people fs-4"></i>
                         </div>
@@ -87,7 +87,7 @@
         <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.roles.index') }}" class="text-decoration-none">
                 <div class="card setting-card h-60 hover-card">
-                    <div class="card-body text-center py-2">
+                    <div class="card-body text-center py-2 px-1">
                         <div class="icon-circle bg-success text-white mb-3 mx-auto">
                             <i class="bi bi-shield-check fs-4"></i>
                         </div>
@@ -105,7 +105,7 @@
         <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.permissions.index') }}" class="text-decoration-none">
                 <div class="card setting-card h-60 hover-card">
-                    <div class="card-body text-center py-2">
+                    <div class="card-body text-center py-2 px-1">
                         <div class="icon-circle bg-warning text-white mb-3 mx-auto">
                             <i class="bi bi-key fs-4"></i>
                         </div>
@@ -123,7 +123,7 @@
         <div class="col-md-3 mb-1">
             <a href="{{ route('settings.security_settings.users.index') }}" class="text-decoration-none">
                 <div class="card setting-card h-60 hover-card">
-                    <div class="card-body text-center py-2">
+                    <div class="card-body text-center py-2 px-1">
                         <div class="icon-circle bg-info text-white mb-3 mx-auto">
                             <i class="bi bi-person-plus fs-4"></i>
                         </div>

@@ -1,8 +1,9 @@
 <?php
 
+
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Configuration\{Exceptions, Middleware};
+use App\Http\Middleware\{CheckModuleAccess, CheckPermission};
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Register custom middleware aliases
+        $middleware->alias([
+            'permission' => CheckPermission::class,
+            'module' => CheckModuleAccess::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

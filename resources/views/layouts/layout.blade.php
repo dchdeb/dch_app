@@ -188,6 +188,9 @@
         document.getElementById('startTourBtn')?.addEventListener('click', startTour);
     </script>
 
+{{--  Script for sidebar menu operations And others Scipt js file code --}}
+
+    @stack('scripts')
 
 
 
