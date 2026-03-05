@@ -1,5 +1,52 @@
 <?php
 
+// namespace App\Http\Controllers;
+
+// use Illuminate\Http\Request;
+
+// class SecurityController extends Controller
+// {
+//        public function index()
+//     {
+//         return view('settings.security_settings.index');
+//     }
+
+//     public function createUser()
+//     {
+//         return view('settings.security.create_user');
+//     }
+
+//     public function createGroup()
+//     {
+//         return view('settings.security.create_group');
+//     }
+
+//     public function roles()
+//     {
+//         return view('settings.security.roles');
+//     }
+
+//     public function permissions()
+//     {
+//         return view('settings.security.permissions');
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,11 +56,6 @@ use Spatie\Permission\Models\{Permission, Role};
 
 class SecurityController extends Controller
 {
-    /**
-     * Protected system roles that cannot be deleted
-     */
-    protected $protectedRoles = ['super-admin', 'hospital-admin'];
-
     /**
      * Display security settings index
      */
@@ -61,10 +103,7 @@ class SecurityController extends Controller
     public function createUser()
     {
         $roles = Role::all();
-        $protectedRoles = $this->protectedRoles;
-        $isSuperAdmin = auth()->user()->hasRole('super-admin');
-        
-        return view('settings.security_settings.users.create', compact('roles', 'protectedRoles', 'isSuperAdmin'));
+        return view('settings.security_settings.users.create', compact('roles'));
     }
 
     /**
@@ -80,11 +119,6 @@ class SecurityController extends Controller
             'roles.*' => 'exists:roles,name',
         ]);
 
-        // Only super-admin can assign super-admin role
-        if (in_array('super-admin', $request->roles) && !auth()->user()->hasRole('super-admin')) {
-            return back()->withInput()->with('error', 'Only Super Admin can assign Super Admin role!');
-        }
-
         DB::beginTransaction();
         try {
             $user = User::create([
@@ -98,7 +132,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.users.index')
+            return redirect()->route('settings.security_settings.users.index')
                 ->with('success', 'User created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -114,12 +148,8 @@ class SecurityController extends Controller
         $user = User::with('roles')->findOrFail($id);
         $roles = Role::all();
         $userRoles = $user->roles->pluck('name')->toArray();
-        $protectedRoles = $this->protectedRoles;
-        $isSuperAdmin = auth()->user()->hasRole('super-admin');
-        $isEditingSelf = ($user->id === auth()->id());
-        $isEditingSuperAdmin = $user->hasRole('super-admin');
 
-        return view('settings.security_settings.users.edit', compact('user', 'roles', 'userRoles', 'protectedRoles', 'isSuperAdmin', 'isEditingSelf', 'isEditingSuperAdmin'));
+        return view('settings.security_settings.users.edit', compact('user', 'roles', 'userRoles'));
     }
 
     /**
@@ -136,31 +166,6 @@ class SecurityController extends Controller
             'roles.*' => 'exists:roles,name',
         ]);
 
-        // Check if editing super-admin user
-        $wasSuperAdmin = $user->hasRole('super-admin');
-        $willBeSuperAdmin = in_array('super-admin', $request->roles);
-
-        // Only super-admin can modify super-admin role
-        if ($wasSuperAdmin && !auth()->user()->hasRole('super-admin')) {
-            return back()->withInput()->with('error', 'Only Super Admin can modify Super Admin account!');
-        }
-
-        // Only super-admin can assign super-admin role
-        if ($willBeSuperAdmin && !auth()->user()->hasRole('super-admin')) {
-            return back()->withInput()->with('error', 'Only Super Admin can assign Super Admin role!');
-        }
-
-        // Prevent removing super-admin from the last super-admin
-        if ($wasSuperAdmin && !$willBeSuperAdmin) {
-            $superAdminCount = User::whereHas('roles', function($q) {
-                $q->where('name', 'super-admin');
-            })->count();
-
-            if ($superAdminCount <= 1) {
-                return back()->withInput()->with('error', 'Cannot remove Super Admin role from the last Super Admin!');
-            }
-        }
-
         DB::beginTransaction();
         try {
             $user->update([
@@ -173,7 +178,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.users.index')
+            return redirect()->route('settings.security_settings.users.index')
                 ->with('success', 'User updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -188,30 +193,14 @@ class SecurityController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Prevent deleting self
+        
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account!');
         }
 
-        // Prevent deleting last super-admin
-        if ($user->hasRole('super-admin')) {
-            $superAdminCount = User::whereHas('roles', function($q) {
-                $q->where('name', 'super-admin');
-            })->count();
-
-            if ($superAdminCount <= 1) {
-                return back()->with('error', 'Cannot delete the last Super Admin account!');
-            }
-
-            // Only super-admin can delete another super-admin
-            if (!auth()->user()->hasRole('super-admin')) {
-                return back()->with('error', 'Only Super Admin can delete another Super Admin account!');
-            }
-        }
-
         $user->delete();
 
-        return redirect()->route('settings.security.users.index')
+        return redirect()->route('settings.security_settings.users.index')
             ->with('success', 'User deleted successfully!');
     }
 
@@ -225,12 +214,6 @@ class SecurityController extends Controller
         ]);
 
         $user = User::findOrFail($id);
-
-        // Only super-admin can reset super-admin password
-        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
-            return back()->with('error', 'Only Super Admin can reset Super Admin password!');
-        }
-
         $user->update([
             'password' => Hash::make($request->password)
         ]);
@@ -249,8 +232,6 @@ class SecurityController extends Controller
     {
         $roles = Role::withCount('permissions')->with('permissions')->paginate(15);
         $permissions = Permission::all();
-        $protectedRoles = $this->protectedRoles;
-        $isSuperAdmin = auth()->user()->hasRole('super-admin');
         
         // Group permissions by module
         $groupedPermissions = $permissions->groupBy(function($permission) {
@@ -258,7 +239,7 @@ class SecurityController extends Controller
             return $parts[0];
         });
 
-        return view('settings.security_settings.roles.index', compact('roles', 'permissions', 'groupedPermissions', 'protectedRoles', 'isSuperAdmin'));
+        return view('settings.security_settings.roles.index', compact('roles', 'permissions', 'groupedPermissions'));
     }
 
     /**
@@ -288,11 +269,6 @@ class SecurityController extends Controller
             'permissions.*' => 'exists:permissions,name',
         ]);
 
-        // Prevent creating role with protected names
-        if (in_array($request->name, $this->protectedRoles)) {
-            return back()->withInput()->with('error', 'Cannot create role with this name!');
-        }
-
         DB::beginTransaction();
         try {
             $role = Role::create([
@@ -307,7 +283,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -323,9 +299,6 @@ class SecurityController extends Controller
         $role = Role::with('permissions')->findOrFail($id);
         $permissions = Permission::orderBy('name')->get();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
-        $protectedRoles = $this->protectedRoles;
-        $isSuperAdmin = auth()->user()->hasRole('super-admin');
-        $isProtected = in_array($role->name, $this->protectedRoles);
         
         // Group permissions by module
         $groupedPermissions = $permissions->groupBy(function($permission) {
@@ -333,7 +306,7 @@ class SecurityController extends Controller
             return $parts[0];
         });
 
-        return view('settings.security_settings.roles.edit', compact('role', 'permissions', 'rolePermissions', 'groupedPermissions', 'protectedRoles', 'isSuperAdmin', 'isProtected'));
+        return view('settings.security_settings.roles.edit', compact('role', 'permissions', 'rolePermissions', 'groupedPermissions'));
     }
 
     /**
@@ -349,24 +322,6 @@ class SecurityController extends Controller
             'permissions.*' => 'exists:permissions,name',
         ]);
 
-        // Check if this is a protected role
-        $isProtected = in_array($role->name, $this->protectedRoles);
-
-        // Only super-admin can edit protected roles
-        if ($isProtected && !auth()->user()->hasRole('super-admin')) {
-            return back()->withInput()->with('error', 'Only Super Admin can edit this role!');
-        }
-
-        // Prevent changing name of protected roles
-        if ($isProtected && $request->name !== $role->name) {
-            return back()->withInput()->with('error', 'Cannot change name of system roles!');
-        }
-
-        // Prevent renaming to protected names
-        if (!$isProtected && in_array($request->name, $this->protectedRoles)) {
-            return back()->withInput()->with('error', 'Cannot use this name!');
-        }
-
         DB::beginTransaction();
         try {
             $role->update([
@@ -379,7 +334,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -394,9 +349,10 @@ class SecurityController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        // Prevent deleting protected roles
-        if (in_array($role->name, $this->protectedRoles)) {
-            return back()->with('error', 'Cannot delete system role "' . $role->name . '"!');
+        // Prevent deleting system roles
+        $protectedRoles = ['super-admin', 'hospital-admin'];
+        if (in_array($role->name, $protectedRoles)) {
+            return back()->with('error', 'Cannot delete system role!');
         }
 
         // Check if role is assigned to users
@@ -410,7 +366,7 @@ class SecurityController extends Controller
 
         $role->delete();
 
-        return redirect()->route('settings.security.roles.index')
+        return redirect()->route('settings.security_settings.roles.index')
             ->with('success', 'Role deleted successfully!');
     }
 
@@ -470,18 +426,14 @@ class SecurityController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name',
-            'display_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:500',
         ]);
 
         Permission::create([
             'name' => $request->name,
             'guard_name' => 'web',
-            'display_name' => $request->display_name,
-            'description' => $request->description,
         ]);
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission created successfully!');
     }
 
@@ -503,17 +455,13 @@ class SecurityController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name,' . $id,
-            'display_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:500',
         ]);
 
         $permission->update([
             'name' => $request->name,
-            'display_name' => $request->display_name,
-            'description' => $request->description,
         ]);
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission updated successfully!');
     }
 
@@ -525,7 +473,7 @@ class SecurityController extends Controller
         $permission = Permission::findOrFail($id);
         $permission->delete();
 
-        return redirect()->route('settings.security.permissions.index')
+        return redirect()->route('settings.security_settings.permissions.index')
             ->with('success', 'Permission deleted successfully!');
     }
 
@@ -592,14 +540,6 @@ class SecurityController extends Controller
             'role' => 'required|exists:roles,name',
         ]);
 
-        // Only super-admin can assign super-admin role
-        if ($request->role === 'super-admin' && !auth()->user()->hasRole('super-admin')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Only Super Admin can assign Super Admin role!'
-            ], 403);
-        }
-
         $users = User::whereIn('id', $request->user_ids)->get();
         
         foreach ($users as $user) {
@@ -618,11 +558,6 @@ class SecurityController extends Controller
     public function cloneRole($id)
     {
         $originalRole = Role::with('permissions')->findOrFail($id);
-
-        // Cannot clone protected roles
-        if (in_array($originalRole->name, $this->protectedRoles)) {
-            return back()->with('error', 'Cannot clone system roles!');
-        }
         
         DB::beginTransaction();
         try {
@@ -635,7 +570,7 @@ class SecurityController extends Controller
 
             DB::commit();
 
-            return redirect()->route('settings.security.roles.index')
+            return redirect()->route('settings.security_settings.roles.index')
                 ->with('success', 'Role cloned successfully!');
         } catch (\Exception $e) {
             DB::rollBack();

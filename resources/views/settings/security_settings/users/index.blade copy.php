@@ -7,202 +7,249 @@
     <span>›</span>
     <a href="{{ route('settings.security_settings.index') }}">Security Settings</a>
     <span>›</span>
-    <span>Create User</span>
+    <span>Users</span>
 @endsection
 
-@section('title', 'security_settings')
+@section('title', 'User Management')
+
 @section('content')
-    {{-- <h1>  Settings</h1> --}}
-
-    {{-- Top filter option start --}}
-    <div class="row justify-content-center">
-
-        <div class="col-12 col-md-8 col-lg-6 d-flex justify-content-center">
-
-            <div class="card filter-card mb-4 p-4 w-100" style="max-width: 500px;">
-
-                <div class="fw-semibold dashboard-home p-2 text-center">
-                    Filter Option
-                </div>
-                <hr>
-
-                <form method="GET" action="">
-
-                    <!-- Employee Name -->
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Employee Name</label>
-                        <input type="text" name="name" value="{{ request('name') }}" class="form-control"
-                            placeholder="Enter employee name">
-                    </div>
-
-                    <!-- Status -->
-                    <div class="text-center mb-4">
-
-
-                        <div class="status-group justify-content-center">
-
-                            <label class="form-label fw-semibold d-block mb-3">Status</label>
-
-                            <label class="status-option">
-                                <input type="radio" name="status" value="all"
-                                    {{ request('status', 'all') == 'all' ? 'checked' : '' }}>
-                                <span>All</span>
-                            </label>
-
-                            <label class="status-option">
-                                <input type="radio" name="status" value="active"
-                                    {{ request('status') == 'active' ? 'checked' : '' }}>
-                                <span>Active</span>
-                            </label>
-
-                            <label class="status-option">
-                                <input type="radio" name="status" value="inactive"
-                                    {{ request('status') == 'inactive' ? 'checked' : '' }}>
-                                <span>Inactive</span>
-                            </label>
-
-                        </div>
-                    </div>
-
-                    <!-- Button -->
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-success px-3">
-                            <i class="bi bi-search me-1"></i> Filter
-                        </button>
-                    </div>
-
-                </form>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-people me-2"></i>User Management</h4>
+                <a href="{{ route('settings.security_settings.users.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Add New User
+                </a>
             </div>
-
         </div>
     </div>
 
-    {{-- Top filter option end --}}
-
-
-
-
-
-    <div class=" ">
-
-
-        <!-- FILTER + CREATE --> 
-        <div class="card">
-            <div class="top-bar">
-
-                <div class="filter">
-                    <form method="GET">
-                        <input type="text" name="employee_name" placeholder="Employee Name">
-                        <button class="btn btn-primary">Search</button>
-                        <label><input type="radio" name="status" value=""> All</label>
-                        <label><input type="radio" name="status" value="active"> Active</label>
-                        <label><input type="radio" name="status" value="inactive"> Inactive</label>
-
-                        <br><br>
-
+    {{-- Search and Filter --}}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" action="{{ route('settings.security_settings.users.index') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" 
+                                   placeholder="Search by name or email..." 
+                                   value="{{ request('search') }}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="role" class="form-select">
+                                <option value="">All Roles</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
+                                        {{ ucfirst(str_replace('-', ' ', $role->name)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="bi bi-search me-1"></i> Search
+                            </button>
+                            <a href="{{ route('settings.security_settings.users.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </a>
+                        </div>
                     </form>
                 </div>
-
-                <button class="btn btn-success" onclick="openModal()">+ Create User</button>
-
             </div>
         </div>
-
-        <!-- TABLE -->
-        <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Full Name</th>
-                        <th>Employee Name</th>
-                        <th>Employee ID</th>
-                        <th>Active</th>
-                        <th>Super Admin</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-
-                    <tr>
-                        <td>hospital@gmail.com</td>
-                        <td>Susmita</td>
-                        <td>Susmita Debnath</td>
-                        <td>emp88909</td>
-                        <td>Y</td>
-                        <td>Y</td>
-                    </tr>
-                    {{-- @foreach ($users as $user)
-                        <tr>
-                            <td>{{ $user->email }}</td>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->employee_name }}</td>
-                            <td>{{ $user->employee_id }}</td>
-
-                            <td>
-                                @if ($user->active)
-                                    <span class="badge active">Active</span>
-                                @else
-                                    <span class="badge inactive">Inactive</span>
-                                @endif
-                            </td>
-
-                            <td>
-                                @if ($user->is_super_admin)
-                                    <span class="badge super">Yes</span>
-                                @else
-                                    <span class="badge normal">No</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach --}}
-                </tbody>
-            </table>
-        </div>
-
-
     </div>
 
-    <!-- MODAL -->
+    {{-- Users Table --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-    <div class="modal" id="modal">
-        <div class="modal-box">
-            <h3>Create User</h3>
-            {{-- {{ route('users.store') }} --}}
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-            <form method="POST" action="">
-                @csrf
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Roles</th>
+                                    <th>Created</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($users as $index => $user)
+                                    <tr>
+                                        <td>{{ $users->firstItem() + $index }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle bg-primary text-white me-2">
+                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                                </div>
+                                                {{ $user->name }}
+                                            </div>
+                                        </td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>
+                                            @foreach($user->roles as $role)
+                                                <span class="badge bg-info me-1">{{ ucfirst(str_replace('-', ' ', $role->name)) }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>{{ $user->created_at->format('d M Y') }}</td>
+                                        <td class="text-center">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ route('settings.security_settings.users.edit', $user->id) }}" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#resetPasswordModal{{ $user->id }}" 
+                                                        title="Reset Password">
+                                                    <i class="bi bi-key"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-info" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#userDetailsModal{{ $user->id }}" 
+                                                        title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <form action="{{ route('settings.security_settings.users.destroy', $user->id) }}" 
+                                                      method="POST" 
+                                                      class="d-inline"
+                                                      onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
 
-                <input type="text" name="full_name" placeholder="Full Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <input type="text" name="employee_name" placeholder="Employee Name">
-                <input type="text" name="employee_id" placeholder="Employee ID">
+                                    {{-- Reset Password Modal --}}
+                                    <div class="modal fade" id="resetPasswordModal{{ $user->id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form action="{{ route('settings.security_settings.users.reset-password', $user->id) }}" method="POST">
+                                                    @csrf
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Reset Password - {{ $user->name }}</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">New Password</label>
+                                                            <input type="password" name="password" class="form-control" required>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Confirm Password</label>
+                                                            <input type="password" name="password_confirmation" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-warning">Reset Password</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <label><input type="checkbox" name="active" value="1"> Active</label><br>
-                <label><input type="checkbox" name="is_super_admin" value="1"> Super Admin</label><br><br>
+                                    {{-- User Details Modal --}}
+                                    <div class="modal fade" id="userDetailsModal{{ $user->id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">User Details - {{ $user->name }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <strong>Name:</strong> {{ $user->name }}
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <strong>Email:</strong> {{ $user->email }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-12">
+                                                            <strong>Roles:</strong>
+                                                            <div class="mt-2">
+                                                                @foreach($user->roles as $role)
+                                                                    <span class="badge bg-info me-1">{{ ucfirst(str_replace('-', ' ', $role->name)) }}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <strong>Permissions:</strong>
+                                                            <div class="mt-2 d-flex flex-wrap gap-1">
+                                                                @php
+                                                                    $allPermissions = [];
+                                                                    foreach($user->roles as $role) {
+                                                                        foreach($role->permissions as $perm) {
+                                                                            $allPermissions[$perm->name] = $perm;
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                @foreach($allPermissions as $perm)
+                                                                    <span class="badge bg-secondary">{{ $perm->name }}</span>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                                            No users found
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                <button class="btn btn-success">Save</button>
-                <button type="button" class="btn btn-primary" onclick="closeModal()">Cancel</button>
-            </form>
+                    {{-- Pagination --}}
+                    {{ $users->links() }}
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
-
-        <script>
-            function openModal() {
-                document.getElementById('modal').style.display = 'block';
-            }
-
-            function closeModal() {
-                document.getElementById('modal').style.display = 'none';
-            }
-        </script>
-
-
-
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
-    @endsection
+<style>
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+</style>
+@endsection

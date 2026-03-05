@@ -5,7 +5,7 @@
     <span>›</span>
     <a href="{{ route('settings.index') }}">Settings</a>
     <span>›</span>
-    <a href="{{ route('settings.security_settings.index') }}">Security Settings</a>
+    <a href="{{ route('settings.security_settings.index') }}">Security</a>
     <span>›</span>
     <span>Users</span>
 @endsection
@@ -39,11 +39,13 @@
                         <div class="col-md-3">
                             <select name="role" class="form-select">
                                 <option value="">All Roles</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('-', ' ', $role->name)) }}
-                                    </option>
-                                @endforeach
+                                @isset($roles)
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('-', ' ', $role->name)) }}
+                                        </option>
+                                    @endforeach
+                                @endisset
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -67,14 +69,14 @@
                 <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
+                            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     @endif
@@ -92,148 +94,266 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($users as $index => $user)
-                                    <tr>
-                                        <td>{{ $users->firstItem() + $index }}</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-circle bg-primary text-white me-2">
-                                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                @isset($users)
+                                    @forelse($users as $index => $userItem)
+                                        @php
+                                            $isSuperAdminUser = $userItem->hasRole('super-admin');
+                                            $isLoggedInUser = ($userItem->id === auth()->id());
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $users->firstItem() + $index }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle bg-primary text-white me-2">
+                                                        {{ strtoupper(substr($userItem->name, 0, 1)) }}
+                                                    </div>
+                                                    <div>
+                                                        {{ $userItem->name }}
+                                                        @if($isSuperAdminUser)
+                                                            <span class="badge bg-danger ms-1"><i class="bi bi-shield-fill"></i></span>
+                                                        @endif
+                                                        @if($isLoggedInUser)
+                                                            <span class="badge bg-success ms-1">You</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                {{ $user->name }}
-                                            </div>
-                                        </td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>
-                                            @foreach($user->roles as $role)
-                                                <span class="badge bg-info me-1">{{ ucfirst(str_replace('-', ' ', $role->name)) }}</span>
-                                            @endforeach
-                                        </td>
-                                        <td>{{ $user->created_at->format('d M Y') }}</td>
-                                        <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <a href="{{ route('settings.security_settings.users.edit', $user->id) }}" 
-                                                   class="btn btn-sm btn-outline-primary" title="Edit">
-                                                    <i class="bi bi-pencil"></i>
-                                                </a>
-                                                <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#resetPasswordModal{{ $user->id }}" 
-                                                        title="Reset Password">
-                                                    <i class="bi bi-key"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-outline-info" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#userDetailsModal{{ $user->id }}" 
-                                                        title="View Details">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                                <form action="{{ route('settings.security_settings.users.destroy', $user->id) }}" 
-                                                      method="POST" 
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                                                        <i class="bi bi-trash"></i>
+                                            </td>
+                                            <td>{{ $userItem->email }}</td>
+                                            <td>
+                                                @foreach($userItem->roles as $role)
+                                                    @php
+                                                        $isProtected = in_array($role->name, ['super-admin', 'hospital-admin']);
+                                                    @endphp
+                                                    <span class="badge {{ $isProtected ? 'bg-warning text-dark' : 'bg-info' }} me-1">
+                                                        @if($isProtected)
+                                                            <i class="bi bi-lock-fill me-1"></i>
+                                                        @endif
+                                                        {{ ucfirst(str_replace('-', ' ', $role->name)) }}
+                                                    </span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $userItem->created_at->format('d M Y') }}</td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('settings.security_settings.users.edit', $userItem->id) }}" 
+                                                       class="btn btn-sm btn-outline-primary" title="Edit">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#resetPasswordModal{{ $userItem->id }}" 
+                                                            title="Reset Password">
+                                                        <i class="bi bi-key"></i>
                                                     </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#userDetailsModal{{ $userItem->id }}" 
+                                                            title="View Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    @if(!$isLoggedInUser)
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#deleteUserModal{{ $userItem->id }}" 
+                                                                title="Delete">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
 
-                                    {{-- Reset Password Modal --}}
-                                    <div class="modal fade" id="resetPasswordModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form action="{{ route('settings.security_settings.users.reset-password', $user->id) }}" method="POST">
-                                                    @csrf
+                                        {{-- Reset Password Modal --}}
+                                        <div class="modal fade" id="resetPasswordModal{{ $userItem->id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ route('settings.security_settings.users.reset-password', $userItem->id) }}" method="POST">
+                                                        @csrf
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">
+                                                                <i class="bi bi-key me-2"></i>Reset Password - {{ $userItem->name }}
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @if($isSuperAdminUser && !auth()->user()->hasRole('super-admin'))
+                                                                <div class="alert alert-warning">
+                                                                    <i class="bi bi-lock me-2"></i>
+                                                                    Only Super Admin can reset Super Admin password.
+                                                                </div>
+                                                            @else
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">New Password <span class="text-danger">*</span></label>
+                                                                    <input type="password" name="password" class="form-control" required minlength="8">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                                                    <input type="password" name="password_confirmation" class="form-control" required>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            @if($isSuperAdminUser && !auth()->user()->hasRole('super-admin'))
+                                                                <button type="submit" class="btn btn-secondary" disabled>No Permission</button>
+                                                            @else
+                                                                <button type="submit" class="btn btn-warning">Reset Password</button>
+                                                            @endif
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- User Details Modal --}}
+                                        <div class="modal fade" id="userDetailsModal{{ $userItem->id }}" tabindex="-1">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title">Reset Password - {{ $user->name }}</h5>
+                                                        <h5 class="modal-title">
+                                                            <i class="bi bi-person me-2"></i>User Details - {{ $userItem->name }}
+                                                        </h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">New Password</label>
-                                                            <input type="password" name="password" class="form-control" required>
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-6">
+                                                                <strong>Name:</strong> {{ $userItem->name }}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <strong>Email:</strong> {{ $userItem->email }}
+                                                            </div>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Confirm Password</label>
-                                                            <input type="password" name="password_confirmation" class="form-control" required>
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-6">
+                                                                <strong>Created:</strong> {{ $userItem->created_at->format('d M Y, h:i A') }}
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <strong>User ID:</strong> {{ $userItem->id }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-3">
+                                                            <div class="col-12">
+                                                                <strong>Roles:</strong>
+                                                                <div class="mt-2">
+                                                                    @foreach($userItem->roles as $role)
+                                                                        @php
+                                                                            $isProtected = in_array($role->name, ['super-admin', 'hospital-admin']);
+                                                                        @endphp
+                                                                        <span class="badge {{ $isProtected ? 'bg-warning text-dark' : 'bg-info' }} me-1">
+                                                                            {{ ucfirst(str_replace('-', ' ', $role->name)) }}
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <strong>Permissions:</strong>
+                                                                <div class="mt-2 d-flex flex-wrap gap-1" style="max-height: 200px; overflow-y: auto;">
+                                                                    @php
+                                                                        $allPermissions = [];
+                                                                        foreach($userItem->roles as $role) {
+                                                                            foreach($role->permissions as $perm) {
+                                                                                $allPermissions[$perm->name] = $perm;
+                                                                            }
+                                                                        }
+                                                                        ksort($allPermissions);
+                                                                    @endphp
+                                                                    @if(count($allPermissions) > 0)
+                                                                        @foreach($allPermissions as $perm)
+                                                                            <span class="badge bg-secondary">{{ $perm->name }}</span>
+                                                                        @endforeach
+                                                                    @else
+                                                                        <span class="text-muted">No permissions assigned</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-warning">Reset Password</button>
+                                                        <a href="{{ route('settings.security_settings.users.edit', $userItem->id) }}" class="btn btn-primary">
+                                                            <i class="bi bi-pencil me-1"></i>Edit User
+                                                        </a>
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                     </div>
-                                                </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {{-- User Details Modal --}}
-                                    <div class="modal fade" id="userDetailsModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">User Details - {{ $user->name }}</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6">
-                                                            <strong>Name:</strong> {{ $user->name }}
+                                        {{-- Delete User Modal --}}
+                                        @if(!$isLoggedInUser)
+                                            <div class="modal fade" id="deleteUserModal{{ $userItem->id }}" tabindex="-1">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header bg-danger text-white">
+                                                            <h5 class="modal-title">
+                                                                <i class="bi bi-exclamation-triangle me-2"></i>Delete User
+                                                            </h5>
+                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Email:</strong> {{ $user->email }}
+                                                        <div class="modal-body">
+                                                            @if($isSuperAdminUser && !auth()->user()->hasRole('super-admin'))
+                                                                <div class="alert alert-warning mb-0">
+                                                                    <i class="bi bi-lock me-2"></i>
+                                                                    Only Super Admin can delete Super Admin accounts.
+                                                                </div>
+                                                            @elseif($isSuperAdminUser)
+                                                                <div class="alert alert-danger">
+                                                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                                                    <strong>Warning!</strong> You are about to delete a Super Admin account.
+                                                                    Make sure there is at least one other Super Admin.
+                                                                </div>
+                                                                <p>Are you sure you want to delete <strong>{{ $userItem->name }}</strong>?</p>
+                                                            @else
+                                                                <p>Are you sure you want to delete <strong>{{ $userItem->name }}</strong>?</p>
+                                                                <p class="text-muted small mb-0">This action cannot be undone.</p>
+                                                            @endif
                                                         </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <div class="col-12">
-                                                            <strong>Roles:</strong>
-                                                            <div class="mt-2">
-                                                                @foreach($user->roles as $role)
-                                                                    <span class="badge bg-info me-1">{{ ucfirst(str_replace('-', ' ', $role->name)) }}</span>
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <strong>Permissions:</strong>
-                                                            <div class="mt-2 d-flex flex-wrap gap-1">
-                                                                @php
-                                                                    $allPermissions = [];
-                                                                    foreach($user->roles as $role) {
-                                                                        foreach($role->permissions as $perm) {
-                                                                            $allPermissions[$perm->name] = $perm;
-                                                                        }
-                                                                    }
-                                                                @endphp
-                                                                @foreach($allPermissions as $perm)
-                                                                    <span class="badge bg-secondary">{{ $perm->name }}</span>
-                                                                @endforeach
-                                                            </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            @if($isSuperAdminUser && !auth()->user()->hasRole('super-admin'))
+                                                                <button type="button" class="btn btn-danger" disabled>No Permission</button>
+                                                            @else
+                                                                <form action="{{ route('settings.security_settings.users.destroy', $userItem->id) }}" method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-danger">
+                                                                        <i class="bi bi-trash me-1"></i>Delete User
+                                                                    </button>
+                                                                </form>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                @empty
+                                        @endif
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                                                No users found
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                @else
                                     <tr>
                                         <td colspan="6" class="text-center py-4">
-                                            <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
-                                            No users found
+                                            <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+                                            Users data not available
                                         </td>
                                     </tr>
-                                @endforelse
+                                @endisset
                             </tbody>
                         </table>
                     </div>
 
                     {{-- Pagination --}}
-                    {{ $users->links() }}
+                    @isset($users)
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $users->links() }}
+                        </div>
+                    @endisset
                 </div>
             </div>
         </div>
